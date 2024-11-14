@@ -15,12 +15,12 @@ Properties groupStrings = importStrings.groupBy {
 
 android {
     compileSdk 33
-    buildToolsVersion = "30.0.3"
+    buildToolsVersion = "34.0.0"
     defaultConfig {
         applicationId "ly.mens.rndpkmn"
         minSdkVersion 29
         targetSdkVersion 33
-        versionCode 32
+        versionCode 33
         versionName "0.5.1a"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
