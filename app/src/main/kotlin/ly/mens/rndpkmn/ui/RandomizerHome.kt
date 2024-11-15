@@ -6,7 +6,9 @@ import android.content.Intent
 import android.content.pm.PackageManager
 import android.app.AlertDialog
 import android.app.AlertDialog.Builder
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -43,6 +45,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.core.app.ActivityCompat
+//import androidx.core.content.ContextCompat
 import androidx.documentfile.provider.DocumentFile
 import com.dabomstew.pkrandom.RandomSource
 import com.dabomstew.pkrandom.SysConstants
@@ -68,7 +71,7 @@ fun RandomizerHome(scaffold: ScaffoldState) {
 
 @Composable
 fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
-	val ctx = LocalContext.current
+	var ctx = LocalContext.current
 	val scope = rememberCoroutineScope()
 	var romSaved by remember { mutableStateOf(false) }
 	var showProgress by remember { mutableStateOf(false) }
@@ -77,11 +80,6 @@ fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
 		if (uri == null) return@rememberLauncherForActivityResult
 		val name = DocumentFile.fromSingleUri(ctx, uri)!!.name ?: uri.lastPathSegment!!
 		val file = File(ctx.filesDir, name)
-		val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-		var s: String = String.format("Doc: %s\nFile: %s", name, file.getName())
-		builder.setMessage(s).setTitle("Test Dialog")
-		val dialog: AlertDialog = builder.create()
-		dialog.show()
 		scope.launch(Dispatchers.IO) {
 			showProgress = true
 			ctx.loadFromUri(uri, file)
@@ -96,17 +94,19 @@ fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
 			}
 			showProgress = false
 		}
+		val s: String = String.format("%s\n%s", file.name, file.path)
+//		Builder(ctx).setMessage(s).show()
 	}
 	val saveRomLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/octet-stream")) { uri ->
 		if (uri == null) return@rememberLauncherForActivityResult
 		val doc = DocumentFile.fromSingleUri(ctx, uri)
 		romFileName.value = doc?.name?.substringAfter(':')
-		val file = File(ctx.filesDir, uri.lastPathSegment!!)		
-		val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-		val s: String = String.format("Doc: %s\nFile: %s\nRomFileName: %s", doc?.getName(), file.getName(), romFileName.value)
-		builder.setMessage(s).setTitle("Test Dialog")
-		val dialog: AlertDialog = builder.create()
-		dialog.show()
+//		var file = File(ctx.filesDir, uri.lastPathSegment!!)
+		var emulated : File = File("/storage/emulated/0/")
+		var file = File(emulated, uri.lastPathSegment!!.split(":")[1])
+		val s: String = String.format("%s",uri)
+
+		Builder(ctx).setMessage(s).show()
 		scope.launch(Dispatchers.IO) {
 			showProgress = true
 			if (!RandomizerSettings.saveRom(file)) {
