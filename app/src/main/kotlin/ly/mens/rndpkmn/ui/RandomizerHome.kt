@@ -78,7 +78,7 @@ fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
 		val name = DocumentFile.fromSingleUri(ctx, uri)!!.name ?: uri.lastPathSegment!!
 		val file = File(ctx.filesDir, name)
 		val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-		var s = String.format("Doc: %1\nFile: %2", "string1", "string2")
+		var s: String = String.format("Doc: %s\nFile: %s", name, file.getName())
 		builder.setMessage(s).setTitle("Test Dialog")
 		val dialog: AlertDialog = builder.create()
 		dialog.show()
@@ -103,7 +103,7 @@ fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
 		romFileName.value = doc?.name?.substringAfter(':')
 		val file = File(ctx.filesDir, uri.lastPathSegment!!)		
 		val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-		val s: String = String.format("Doc: %1\nFile: %2\nRomFileName: %3", doc?.getName(), file.getName(), romFileName.value)
+		val s: String = String.format("Doc: %s\nFile: %s\nRomFileName: %s", doc?.getName(), file.getName(), romFileName.value)
 		builder.setMessage(s).setTitle("Test Dialog")
 		val dialog: AlertDialog = builder.create()
 		dialog.show()
