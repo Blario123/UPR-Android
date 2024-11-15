@@ -78,8 +78,8 @@ fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
 		val name = DocumentFile.fromSingleUri(ctx, uri)!!.name ?: uri.lastPathSegment!!
 		val file = File(ctx.filesDir, name)
 		val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-		val s: String = String.format("Doc: %1\nFile: %2", name, file.getName())
-		builder.setMessage(file.getName()).setTitle("Test Dialog")
+		val s: String = String.format("Doc: %1\nFile: %2", "string1", file.getName())
+		builder.setMessage(s).setTitle("Test Dialog")
 		val dialog: AlertDialog = builder.create()
 		dialog.show()
 		scope.launch(Dispatchers.IO) {
