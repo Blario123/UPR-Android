@@ -75,6 +75,11 @@ fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
 		if (uri == null) return@rememberLauncherForActivityResult
 		val name = DocumentFile.fromSingleUri(ctx, uri)!!.name ?: uri.lastPathSegment!!
 		val file = File(ctx.filesDir, name)
+		val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
+		builder.setMessage("Test").setTitle("Test Dialog")
+			
+		val dialog: AlertDialog = builder.create()
+		dialog.show()
 		scope.launch(Dispatchers.IO) {
 			showProgress = true
 			ctx.loadFromUri(uri, file)
