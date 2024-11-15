@@ -78,8 +78,8 @@ fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
 		val name = DocumentFile.fromSingleUri(ctx, uri)!!.name ?: uri.lastPathSegment!!
 		val file = File(ctx.filesDir, name)
 		val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
-		builder.setMessage("Test").setTitle("Test Dialog")
-			
+		val s: String = String.format("Doc: %1\nFile: %2", doc.getName(), file.getName())
+		builder.setMessage(file.getName()).setTitle("Test Dialog")
 		val dialog: AlertDialog = builder.create()
 		dialog.show()
 		scope.launch(Dispatchers.IO) {
@@ -101,7 +101,12 @@ fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
 		if (uri == null) return@rememberLauncherForActivityResult
 		val doc = DocumentFile.fromSingleUri(ctx, uri)
 		romFileName.value = doc?.name?.substringAfter(':')
-		val file = File(ctx.filesDir, uri.lastPathSegment!!)
+		val file = File(ctx.filesDir, uri.lastPathSegment!!)		
+		val builder: AlertDialog.Builder = AlertDialog.Builder(ctx)
+		val s: String = String.format("Doc: %1\nFile: %2\nRomFileName: %3", doc.getName(), file.getName(), romFileName.value)
+		builder.setMessage(s).setTitle("Test Dialog")
+		val dialog: AlertDialog = builder.create()
+		dialog.show()
 		scope.launch(Dispatchers.IO) {
 			showProgress = true
 			if (!RandomizerSettings.saveRom(file)) {
