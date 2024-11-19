@@ -4,7 +4,9 @@ import android.Manifest
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
+import android.provider.Settings
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
@@ -66,7 +68,7 @@ fun RandomizerHome(scaffold: ScaffoldState) {
 
 @Composable
 fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
-	val ctx = LocalContext.current
+	var ctx = LocalContext.current
 	val scope = rememberCoroutineScope()
 	var romSaved by remember { mutableStateOf(false) }
 	var showProgress by remember { mutableStateOf(false) }
@@ -94,15 +96,22 @@ fun RomButtons(scaffold: ScaffoldState, romFileName: MutableState<String?>) {
 		if (uri == null) return@rememberLauncherForActivityResult
 		val doc = DocumentFile.fromSingleUri(ctx, uri)
 		romFileName.value = doc?.name?.substringAfter(':')
-		val file = File(ctx.filesDir, uri.lastPathSegment!!)
+		val uriSegment : String = uri.lastPathSegment!!.split(":")[1]
+		var emulated : File = File("/")
+		if (!uriSegment.startsWith("/storage/emulated/0/")) {
+			emulated = File("/storage/emulated/0/")
+		}
+		val saveFile = File(emulated, uriSegment)
+		val uriFile = File(saveFile.parent, "temp.rom")
 		scope.launch(Dispatchers.IO) {
 			showProgress = true
-			if (!RandomizerSettings.saveRom(file)) {
+			if (!RandomizerSettings.saveRom(uriFile)) {
 				scaffold.snackbarHostState.showSnackbar(ctx.getString(R.string.error_save_failed))
 				doc?.delete()
-			} else ctx.saveToUri(uri, file)
+			}/* else ctx.saveToUri(Uri.fromFile(saveFile), uriFile)*/
+			uriFile.copyTo(saveFile, true)
 			//clean up temporary file
-			ctx.deleteFile(file.name)
+			uriFile.delete()
 			RandomizerSettings.reloadRomHandler()
 			romSaved = true
 			showProgress = false
